@@ -15,7 +15,10 @@ import java.util.List;
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface StatsMapper {
     EndpointHit toDtoEndpointHit(EndpointHitRequestDto dto);
+
     EndpointHitResponseDto toEntityEndpointHitResponseDto(EndpointHit entity);
+
     ViewStatsResponseDto toViewStatsResponseDto(ViewStats stats);
+
     List<ViewStatsResponseDto> toListViewStatsResponseDto(List<ViewStats> statsList);
 }
