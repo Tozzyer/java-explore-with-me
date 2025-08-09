@@ -11,7 +11,7 @@ import ru.practicum.dto.ViewStatsResponseDto;
 import ru.practicum.mapper.StatsMapper;
 import ru.practicum.service.StatsService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.sql.Timestamp;
 import java.util.List;
 

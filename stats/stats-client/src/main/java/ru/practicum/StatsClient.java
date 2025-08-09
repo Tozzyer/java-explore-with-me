@@ -1,12 +1,12 @@
 package ru.practicum;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.dto.EndpointHitRequestDto;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -19,7 +19,7 @@ public class StatsClient extends BaseClient {
         super(
                 templateBuilder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(statsUrl))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
     }
