@@ -1,6 +1,5 @@
 version: '3.1'
 services:
-
   stats-db:
     image: postgres:16.1
     container_name: stats-db
@@ -17,7 +16,7 @@ services:
     ports:
       - "6541:5432"
     environment:
-      - POSTGRES_DB=ewm-service
+      - POSTGRES_DB=ewm
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
@@ -31,8 +30,8 @@ services:
       - stats-db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stat
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     healthcheck:
       test: [ "CMD", "wget", "-qO-", "http://localhost:9090/actuator/health" ]
       interval: 5s
@@ -46,10 +45,18 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      - ewm-db
-      - stats-server
+      stats-server:
+        condition: service_healthy
+      ewm-db:
+        condition: service_started
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
       - STATS_SERVER_URL=http://stats-server:9090
+      - EWM_STATS_SERVICE_URL=http://stats-server:9090
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
