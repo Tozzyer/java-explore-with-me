@@ -38,20 +38,12 @@ services:
     container_name: stats-server
     ports:
       - "9090:9090"
-      - "9091:9091"
     depends_on:
-      stats-db:
-        condition: service_healthy
+      - stats-db
     environment:
-      - SPRING_PROFILES_ACTIVE=ci
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stat
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:9090/actuator/health || exit 1"]
-      interval: 5s
-      timeout: 2s
-      retries: 24
 
   ewm-service:
     build:
