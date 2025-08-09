@@ -1,6 +1,6 @@
 version: '3.1'
-
 services:
+
   stats-db:
     image: postgres:14-alpine
     container_name: stats-db
@@ -17,13 +17,12 @@ services:
     ports:
       - "6541:5432"
     environment:
-      - POSTGRES_DB=ewm
+      - POSTGRES_DB=ewm-service
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
   stats-server:
-    build:
-      context: ./stats/stats-server
+    build: stats/stats-server
     container_name: stats-server
     ports:
       - "9090:9090"
@@ -31,40 +30,21 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_PROFILES_ACTIVE=ci
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stat
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:9090/actuator/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 40
-    command: >
-      sh -c "java -jar app.jar"
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
 
   ewm-service:
-    build:
-      context: ./main-service
+    build: main-service
     container_name: ewm-service
     ports:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      stats-server:
-        condition: service_healthy
-      ewm-db:
-        condition: service_started
+      - ewm-db
+      - stats-server
     environment:
-      - SPRING_PROFILES_ACTIVE=ci
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - STATS_SERVER_URL=http://stats-server:9090
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 40
-    command: >
-      sh -c "java -jar app.jar"
