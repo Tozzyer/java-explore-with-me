@@ -46,8 +46,8 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      stats-server:
-        condition: service_healthy
+      - ewm-db
+      - stats-server
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
       - POSTGRES_USER=postgres
