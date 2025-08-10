@@ -32,11 +32,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stat
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_APPLICATION_JSON={"server":{"port":9090},"management":{"endpoints":{"web":{"exposure":{"include":"health,info"}}}}}
     healthcheck:
-      test: [ "CMD", "wget", "-qO-", "http://localhost:9090/actuator/health" ]
+      test: [ "CMD-SHELL", "bash -lc 'echo > /dev/tcp/127.0.0.1/9090'" ]
       interval: 5s
       timeout: 3s
       retries: 10
+
 
   ewm-service:
     build: main-service
