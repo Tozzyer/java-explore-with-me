@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.dto.NewEndpointHitRequestDto;
-import ru.practicum.ewm.dto.EndpointHitResponseDto;
-import ru.practicum.ewm.dto.ViewStatsResponseDto;
-import ru.practicum.ewm.server.exceptionshandler.ValidationException;
-import ru.practicum.ewm.server.model.EndpointHitMapper;
+import ru.practicum.ewm.dto.request.NewEndpointHitRequestDto;
+import ru.practicum.ewm.dto.response.EndpointHitResponseDto;
+import ru.practicum.ewm.dto.response.ViewStatsResponseDto;
+import ru.practicum.ewm.server.exception.ValidationException;
+import ru.practicum.ewm.server.mapper.EndpointHitMapper;
 import ru.practicum.ewm.server.model.EndpointHit;
 import ru.practicum.ewm.server.repository.EndpointHitRepository;
 
@@ -25,7 +25,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
 
     @Override
     @Transactional
-    public EndpointHitResponseDto createHit(NewEndpointHitRequestDto newEndpointHitDto) {
+    public EndpointHitResponseDto createEndpointHit(NewEndpointHitRequestDto newEndpointHitDto) {
         log.info("Сохранение нового запроса: {}", newEndpointHitDto);
         EndpointHit newEndpointHit = EndpointHitMapper.toNewEndpointHit(newEndpointHitDto);
         EndpointHit savedEndpointHit = endpointHitRepository.save(newEndpointHit);
@@ -33,18 +33,18 @@ public class EndpointHitServiceImpl implements EndpointHitService {
     }
 
     @Override
-    public List<ViewStatsResponseDto> getStat(LocalDateTime start,
-                                              LocalDateTime end,
-                                              List<String> uris,
-                                              boolean unique) {
+    public List<ViewStatsResponseDto> getStats(LocalDateTime start,
+                                               LocalDateTime end,
+                                               List<String> uris,
+                                               boolean unique) {
         log.info("Получение статистики: start={}, end={}, uris={}, unique={}", start, end, uris, unique);
 
-        validateTime(start, end);
+        validateTimeRange(start, end);
 
-        return selectQuery(start, end, uris, unique);
+        return selectQueryMethod(start, end, uris, unique);
     }
 
-    private void validateTime(LocalDateTime start, LocalDateTime end) {
+    private void validateTimeRange(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null) {
             throw new ValidationException("Параметры 'start' и 'end' не могут быть null");
         }
@@ -53,10 +53,10 @@ public class EndpointHitServiceImpl implements EndpointHitService {
         }
     }
 
-    private List<ViewStatsResponseDto> selectQuery(LocalDateTime start,
-                                                   LocalDateTime end,
-                                                   List<String> uris,
-                                                   boolean unique) {
+    private List<ViewStatsResponseDto> selectQueryMethod(LocalDateTime start,
+                                                         LocalDateTime end,
+                                                         List<String> uris,
+                                                         boolean unique) {
         boolean hasUris = uris != null && !uris.isEmpty();
 
         if (unique) {

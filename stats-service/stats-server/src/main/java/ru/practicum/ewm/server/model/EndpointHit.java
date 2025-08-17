@@ -1,27 +1,35 @@
 package ru.practicum.ewm.server.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@Builder
+@ToString
 @Table(name = "endpoint_hits")
-public class EndpointHit {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public final class EndpointHit {
 
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false)
     private Long id;
 
     @Column(nullable = false)
@@ -35,25 +43,4 @@ public class EndpointHit {
 
     @Column(name = "created", nullable = false)
     private LocalDateTime timestamp;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof EndpointHit that)) return false;
-
-        if (id != null && that.id != null) {
-            return id.equals(that.id);
-        }
-        return Objects.equals(app, that.app)
-                && Objects.equals(uri, that.uri)
-                && Objects.equals(ip, that.ip)
-                && Objects.equals(timestamp, that.timestamp);
-    }
-
-    @Override
-    public int hashCode() {
-        return (id != null)
-                ? Objects.hash(id)
-                : Objects.hash(app, uri, ip, timestamp);
-    }
 }
