@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@EqualsAndHashCode
 @Table(name = "categories")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

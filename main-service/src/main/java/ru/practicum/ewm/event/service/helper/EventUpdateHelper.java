@@ -13,6 +13,7 @@ import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
+import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.support.EntityHelper;
 import ru.practicum.ewm.location.model.Location;
 import ru.practicum.ewm.location.repository.LocationRepository;
@@ -23,7 +24,7 @@ import static ru.practicum.ewm.constant.DateTimeFormatters.FORMATTER;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+
 public class EventUpdateHelper {
 
     private final EventRepository eventRepository;
@@ -116,7 +117,7 @@ public class EventUpdateHelper {
                                     Boolean requestModeration,
                                     String title,
                                     Long categoryId,
-                                    ru.practicum.ewm.location.dto.LocationDto locationDto) {
+                                    LocationDto locationDto) {
 
         if (annotation != null) {
             event.setAnnotation(annotation);
