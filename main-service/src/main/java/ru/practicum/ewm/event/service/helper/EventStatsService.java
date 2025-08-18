@@ -3,7 +3,6 @@ package ru.practicum.ewm.event.service.helper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.client.StatsClient;
 import ru.practicum.ewm.dto.response.ViewStatsResponseDto;
 import ru.practicum.ewm.event.model.Event;

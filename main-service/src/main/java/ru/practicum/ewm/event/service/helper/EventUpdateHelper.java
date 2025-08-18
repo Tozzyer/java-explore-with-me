@@ -2,7 +2,6 @@ package ru.practicum.ewm.event.service.helper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.enums.EventState;
 import ru.practicum.ewm.event.dto.request.NewEventRequestDto;
