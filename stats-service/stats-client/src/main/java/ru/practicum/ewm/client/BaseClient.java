@@ -1,7 +1,6 @@
 package ru.practicum.ewm.client;
 
 import jakarta.annotation.Nullable;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,70 +10,56 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-public class BaseClient {
+public abstract class BaseClient {
+
+    private static final List<MediaType> APPLICATION_JSON = List.of(MediaType.APPLICATION_JSON);
+    private static final String PATH_STATS = "/stats?start={start}&end={end}&uris={uris}&unique={unique}";
+    private static final String PATH_HIT = "/hit";
 
     private final RestTemplate restTemplate;
 
-    public BaseClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    protected BaseClient(final RestTemplate restTemplate) {
+        this.restTemplate = Objects.requireNonNull(restTemplate, "restTemplate must not be null");
     }
 
-    protected <T> ResponseEntity<T> get(String path,
-                                        @Nullable java.util.Map<String, Object> parameters,
-                                        ParameterizedTypeReference<T> responseType) {
-        return makeAndSendRequest(HttpMethod.GET, path, parameters, null, responseType);
+    protected ResponseEntity<Object> get(@Nullable final Map<String, Object> parameters) {
+        return makeAndSendRequest(HttpMethod.GET, PATH_STATS, parameters, null);
     }
 
-    protected <T, R> ResponseEntity<R> post(String path,
-                                            T body,
-                                            ParameterizedTypeReference<R> responseType) {
-        return makeAndSendRequest(HttpMethod.POST, path, null, body, responseType);
+    protected <T> ResponseEntity<Object> post(final T body) {
+        return makeAndSendRequest(HttpMethod.POST, PATH_HIT, null, body);
     }
 
-    private <T, R> ResponseEntity<R> makeAndSendRequest(HttpMethod method,
-                                                        String path,
-                                                        @Nullable java.util.Map<String, Object> parameters,
-                                                        @Nullable T body,
-                                                        ParameterizedTypeReference<R> responseType) {
-        HttpEntity<T> requestEntity = buildRequestEntity(body);
-
+    private <T> ResponseEntity<Object> makeAndSendRequest(final HttpMethod method,
+                                                          final String path,
+                                                          @Nullable final Map<String, Object> parameters,
+                                                          @Nullable final T body) {
+        final HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
         try {
-            if (parameters != null) {
-                // Поведение идентично исходнику: parameters -> URI variables
-                return restTemplate.exchange(path, method, requestEntity, responseType, parameters);
-            } else {
-                return restTemplate.exchange(path, method, requestEntity, responseType);
-            }
-        } catch (HttpStatusCodeException exception) {
-            // Безопасно обрабатываем возможный null у заголовков
-            HttpHeaders errorHeaders = Objects.requireNonNullElseGet(
-                    exception.getResponseHeaders(), HttpHeaders::new);
-
-            return ResponseEntity
-                    .status(exception.getStatusCode())
-                    .headers(errorHeaders)
-                    .body(null);
+            final ResponseEntity<Object> response = (parameters != null)
+                    ? restTemplate.exchange(path, method, requestEntity, Object.class, parameters)
+                    : restTemplate.exchange(path, method, requestEntity, Object.class);
+            return prepareResponse(response);
+        } catch (HttpStatusCodeException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsByteArray());
         }
-    }
-
-    private HttpEntity<HttpHeaders> emptyEntityWithHeaders() {
-        return new HttpEntity<>(defaultHeaders());
-    }
-
-    private <T> HttpEntity<T> buildRequestEntity(@Nullable T body) {
-        // Оставляем прежнюю семантику: Content-Type и Accept как были
-        if (body == null) {
-            return new HttpEntity<>(defaultHeaders());
-        }
-        return new HttpEntity<>(body, defaultHeaders());
     }
 
     private HttpHeaders defaultHeaders() {
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        headers.setAccept(APPLICATION_JSON);
         return headers;
+    }
+
+    private static ResponseEntity<Object> prepareResponse(final ResponseEntity<Object> response) {
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response;
+        }
+        final ResponseEntity.BodyBuilder builder = ResponseEntity.status(response.getStatusCode());
+        return response.hasBody() ? builder.body(response.getBody()) : builder.build();
     }
 }

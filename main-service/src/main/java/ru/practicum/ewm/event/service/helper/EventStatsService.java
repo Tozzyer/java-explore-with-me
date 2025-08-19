@@ -1,0 +1,87 @@
+package ru.practicum.ewm.event.service.helper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import ru.practicum.ewm.client.StatsClient;
+import ru.practicum.ewm.dto.response.ViewStatsResponseDto;
+import ru.practicum.ewm.event.model.Event;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+
+public class EventStatsService {
+
+    private final StatsClient statsClient;
+
+    public void updateEventViews(final Event event) {
+        final LocalDateTime start = LocalDateTime.now().minusMinutes(1);
+        final LocalDateTime end = LocalDateTime.now();
+
+        try {
+            final List<ViewStatsResponseDto> stats = statsClient.getStats(
+                    start,
+                    end,
+                    List.of("/events/" + event.getId()),
+                    true
+            );
+
+            final long views = (stats != null && !stats.isEmpty()) ? stats.get(0).getHits() : 0L;
+            event.setViews(views);
+
+        } catch (Exception exception) {
+            log.warn("Ошибка при получении статистики просмотров события с id={}: {}",
+                    event.getId(), exception.getMessage());
+            event.setViews(0L);
+        }
+    }
+
+    public void updateEventsViews(final List<Event> events) {
+        if (events == null || events.isEmpty()) {
+            return;
+        }
+
+        final LocalDateTime start = events.stream()
+                .map(Event::getCreatedOn)
+                .min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.now());
+        final LocalDateTime end = LocalDateTime.now();
+
+        final List<String> uris = events.stream()
+                .map(event -> "/events/" + event.getId())
+                .toList();
+
+        try {
+            final List<ViewStatsResponseDto> statsList = statsClient.getStats(
+                    start,
+                    end,
+                    uris,
+                    true
+            );
+
+            if (statsList != null && !statsList.isEmpty()) {
+                for (Event event : events) {
+                    final String uri = "/events/" + event.getId();
+                    statsList.stream()
+                            .filter(stat -> uri.equals(stat.getUri()))
+                            .findFirst()
+                            .ifPresentOrElse(
+                                    stat -> event.setViews(stat.getHits()),
+                                    () -> event.setViews(0L)
+                            );
+                }
+            } else {
+                events.forEach(event -> event.setViews(0L));
+            }
+
+        } catch (Exception exception) {
+            log.warn("Ошибка при получении статистики просмотров для {} событий: {}",
+                    events.size(), exception.getMessage());
+            events.forEach(event -> event.setViews(0L));
+        }
+    }
+}

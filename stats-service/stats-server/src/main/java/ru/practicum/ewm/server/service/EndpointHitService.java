@@ -1,16 +1,15 @@
 package ru.practicum.ewm.server.service;
 
-import ru.practicum.ewm.dto.NewEndpointHitRequestDto;
-import ru.practicum.ewm.dto.EndpointHitResponseDto;
-import ru.practicum.ewm.dto.ViewStatsResponseDto;
+import ru.practicum.ewm.dto.request.NewEndpointHitRequestDto;
+import ru.practicum.ewm.dto.response.EndpointHitResponseDto;
+import ru.practicum.ewm.dto.response.ViewStatsResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EndpointHitService {
 
-    List<ViewStatsResponseDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
+    EndpointHitResponseDto createEndpointHit(NewEndpointHitRequestDto newEndpointHitDto);
 
-    EndpointHitResponseDto createHit(NewEndpointHitRequestDto newEndpointHitDto);
-
+    List<ViewStatsResponseDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
 }
