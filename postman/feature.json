@@ -31,29 +31,20 @@
         }
       ],
       "request": {
-        "auth": {
-          "type": "noauth"
-        },
+        "auth": { "type": "noauth" },
         "method": "POST",
-        "header": [],
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\"name\":\"user_1\",\"email\":\"user_1@hotmail.com\"}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/admin/users",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "users"]
         }
       },
       "response": []
@@ -83,29 +74,20 @@
         }
       ],
       "request": {
-        "auth": {
-          "type": "noauth"
-        },
+        "auth": { "type": "noauth" },
         "method": "POST",
-        "header": [],
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\"name\":\"user_2\",\"email\":\"user_2@hotmail.com\"}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/admin/users",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "users"]
         }
       },
       "response": []
@@ -136,25 +118,18 @@
       ],
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\"name\":\"category_1\"}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/admin/categories",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "categories"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories"]
         }
       },
       "response": []
@@ -185,26 +160,18 @@
       ],
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"annotation\": \"Voluptas ex labore accusantium quod quasi sit provident.\",\n  \"category\": {{categoryId}},\n  \"description\": \"Eligendi corrupti incidunt dignissimos blanditiis rerum numquam beatae.\",\n  \"eventDate\": \"2025-10-01 18:57:00\",\n  \"location\": { \"lat\": -15.4197, \"lon\": 32.3827 },\n  \"paid\": true,\n  \"participantLimit\": 860,\n  \"requestModeration\": true,\n  \"title\": \"Minus consectetur et perspiciatis consequuntur nihil qui.\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/users/{{firstUserId}}/events",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "{{firstUserId}}",
-            "events"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "{{firstUserId}}", "events"]
         }
       },
       "response": []
@@ -227,26 +194,60 @@
       ],
       "request": {
         "method": "PATCH",
-        "header": [],
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\"stateAction\":\"PUBLISH_EVENT\"}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/admin/events/{{eventId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "events",
-            "{{eventId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "events", "{{eventId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Создание комментария пользователем 1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 201 или 200\", function () {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && json.id) {",
+              "  pm.collectionVariables.set(\"firstCommentId\", json.id);",
+              "  console.log(\"id первого комментария:\", json.id);",
+              "} else {",
+              "  pm.collectionVariables.set(\"firstCommentId\", null);",
+              "  console.error(\"id первого комментария не был установлен, ответ:\", pm.response.text());",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Первый комментарий пользователя 1 (длина > 30 символов).\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/{{firstUserId}}/events/{{eventId}}/comments",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "{{firstUserId}}", "events", "{{eventId}}", "comments"]
         }
       },
       "response": []
@@ -254,6 +255,18 @@
     {
       "name": "PRIVATE: Попытка изменения чужого комментария",
       "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Проверка, что firstCommentId задан",
+              "if (!pm.collectionVariables.get(\"firstCommentId\")) {",
+              "  throw new Error(\"firstCommentId не задан. Убедись, что выполнен шаг 'Создание комментария пользователем 1'.\");",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        },
         {
           "listen": "test",
           "script": {
@@ -286,29 +299,18 @@
       ],
       "request": {
         "method": "PATCH",
-        "header": [],
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"text\": \"Попытка изменить чужую запись, длина текста более 30 символов.\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "options": { "raw": { "language": "json" } }
         },
         "url": {
           "raw": "{{baseUrl}}/users/{{secondUserId}}/events/{{eventId}}/comments/{{firstCommentId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "{{secondUserId}}",
-            "events",
-            "{{eventId}}",
-            "comments",
-            "{{firstCommentId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "{{secondUserId}}", "events", "{{eventId}}", "comments", "{{firstCommentId}}"]
         }
       },
       "response": []
