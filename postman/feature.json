@@ -1,0 +1,341 @@
+{
+  "info": {
+    "_postman_id": "c1f65d19-03fb-4a6d-8f38-b5a3d85e0210",
+    "name": "feature_alt_full",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40953666"
+  },
+  "item": [
+    {
+      "name": "Регистрация пользователя №1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Код ответа должен быть 200 или 201\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && json.id) {",
+              "  pm.collectionVariables.set(\"firstUserId\", json.id);",
+              "  console.log(\"Первый пользователь создан с id:\", json.id);",
+              "} else {",
+              "  pm.collectionVariables.set(\"firstUserId\", null);",
+              "  console.error(\"Не удалось сохранить id первого пользователя, ответ:\", pm.response.text());",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"user_1\",\"email\":\"user_1@hotmail.com\"}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/admin/users", "host": ["{{baseUrl}}"], "path": ["admin","users"] }
+      }
+    },
+    {
+      "name": "Регистрация пользователя №2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Код ответа должен быть 200 или 201\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && json.id) {",
+              "  pm.collectionVariables.set(\"secondUserId\", json.id);",
+              "  console.log(\"Второй пользователь создан с id:\", json.id);",
+              "} else {",
+              "  pm.collectionVariables.set(\"secondUserId\", null);",
+              "  console.error(\"Не удалось сохранить id второго пользователя, ответ:\", pm.response.text());",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"user_2\",\"email\":\"user_2@hotmail.com\"}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/admin/users", "host": ["{{baseUrl}}"], "path": ["admin","users"] }
+      }
+    },
+    {
+      "name": "Создание категории события",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ожидаем код 200 или 201\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && json.id) {",
+              "  pm.collectionVariables.set(\"categoryId\", json.id);",
+              "  console.log(\"Категория создана с id:\", json.id);",
+              "} else {",
+              "  pm.collectionVariables.set(\"categoryId\", null);",
+              "  console.error(\"Не удалось получить id категории, ответ:\", pm.response.text());",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "body": { "mode": "raw", "raw": "{\"name\":\"category_1\"}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/admin/categories", "host": ["{{baseUrl}}"], "path": ["admin","categories"] }
+      }
+    },
+    {
+      "name": "Создание мероприятия",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен быть 200 или 201\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && json.id) {",
+              "  pm.collectionVariables.set(\"eventId\", json.id);",
+              "  console.log(\"Событие создано с id:\", json.id);",
+              "} else {",
+              "  pm.collectionVariables.set(\"eventId\", null);",
+              "  console.error(\"id события не был установлен, ответ:\", pm.response.text());",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"annotation\": \"Текст аннотации.\",\n  \"category\": {{categoryId}},\n  \"description\": \"Подробное описание события.\",\n  \"eventDate\": \"2025-10-01 18:57:00\",\n  \"location\": { \"lat\": -15.4197, \"lon\": 32.3827 },\n  \"paid\": true,\n  \"participantLimit\": 860,\n  \"requestModeration\": true,\n  \"title\": \"Название события\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/users/{{firstUserId}}/events", "host": ["{{baseUrl}}"], "path": ["users","{{firstUserId}}","events"] }
+      }
+    },
+    {
+      "name": "Администратор публикует событие",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Успех: 200, либо 409 если уже опубликовано",
+              "pm.test(\"Ответ 200 или 409\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 409]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "body": { "mode": "raw", "raw": "{\"stateAction\":\"PUBLISH_EVENT\"}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/admin/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["admin","events","{{eventId}}"] }
+      }
+    },
+    {
+      "name": "Пользователь 1 оставляет комментарий",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Допустимы 201 (создано), 400 (ошибка данных) или 404 (нет события)",
+              "pm.test(\"Ожидаем 201, 400 или 404\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([201, 400, 404]);",
+              "});",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && json.id) {",
+              "  pm.collectionVariables.set(\"firstCommentId\", json.id);",
+              "  console.log(\"Комментарий №1 создан, id:\", json.id);",
+              "} else {",
+              "  pm.collectionVariables.set(\"firstCommentId\", null);",
+              "  console.error(\"id комментария 1 не установлен, ответ:\", pm.response.text());",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Комментарий пользователя_1, удовлетворяющий требованию по длине.\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/users/{{firstUserId}}/events/{{eventId}}/comments", "host": ["{{baseUrl}}"], "path": ["users","{{firstUserId}}","events","{{eventId}}","comments"] }
+      }
+    },
+    {
+      "name": "Пользователь 2 оставляет комментарий",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Возможные статусы: 201, 400 или 404",
+              "pm.test(\"Статус 201, 400 или 404\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([201, 400, 404]);",
+              "});",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && json.id) {",
+              "  pm.collectionVariables.set(\"secondCommentId\", json.id);",
+              "  console.log(\"Комментарий №2 создан, id:\", json.id);",
+              "} else {",
+              "  pm.collectionVariables.set(\"secondCommentId\", null);",
+              "  console.error(\"id комментария 2 не установлен, ответ:\", pm.response.text());",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Комментарий пользователя_2, длина текста достаточна.\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/users/{{secondUserId}}/events/{{eventId}}/comments", "host": ["{{baseUrl}}"], "path": ["users","{{secondUserId}}","events","{{eventId}}","comments"] }
+      }
+    },
+    {
+      "name": "Открытый доступ: список комментариев к событию",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/events/1/comments", "host": ["{{baseUrl}}"], "path": ["events","1","comments"] } }
+    },
+    {
+      "name": "Открытый доступ: получение конкретного комментария",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/events/1/comments/1", "host": ["{{baseUrl}}"], "path": ["events","1","comments","1"] } }
+    },
+    {
+      "name": "Автор редактирует свой комментарий",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Допустимы 200 (обновлен), 400 (ошибка валидации), 404 (не найдено), 409 (прошло больше часа)",
+              "pm.test(\"Ожидаем один из кодов: 200, 400, 404, 409\", () => {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 400, 404, 409]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Обновленный комментарий от user_1\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/users/{{firstUserId}}/events/{{eventId}}/comments/{{firstCommentId}}", "host": ["{{baseUrl}}"], "path": ["users","{{firstUserId}}","events","{{eventId}}","comments","{{firstCommentId}}"] }
+      }
+    },
+    {
+      "name": "Попытка изменить чужой комментарий",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать сообщение о том, что комментарий не принадлежит пользователю\", () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.message).to.include(\"не принадлежит пользователю\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Попытка изменить чужой комментарий (текст больше 30 символов).\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/users/{{secondUserId}}/events/{{eventId}}/comments/{{firstCommentId}}", "host": ["{{baseUrl}}"], "path": ["users","{{secondUserId}}","events","{{eventId}}","comments","{{firstCommentId}}"] }
+      }
+    },
+    {
+      "name": "Удаление чужого комментария другим пользователем",
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test(\"Ожидаем статус 409\", () => { pm.response.to.have.status(409); });"] }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": { "raw": "{{baseUrl}}/users/{{secondUserId}}/events/{{eventId}}/comments/{{firstCommentId}}", "host": ["{{baseUrl}}"], "path": ["users","{{secondUserId}}","events","{{eventId}}","comments","{{firstCommentId}}"] }
+      }
+    },
+    {
+      "name": "Удаление комментария своим автором",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": { "exec": ["if (!pm.collectionVariables.get('firstCommentId')) { throw new Error('id комментария №1 не найден!'); }"] }
+        },
+        {
+          "listen": "test",
+          "script": { "exec": ["console.log('Удаляется комментарий id:', pm.collectionVariables.get('firstCommentId'));","pm.test(\"Код ответа должен быть 204\", () => { pm.response.to.have.status(204); });"] }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": { "raw": "{{baseUrl}}/users/{{firstUserId}}/events/{{eventId}}/comments/{{firstCommentId}}", "host": ["{{baseUrl}}"], "path": ["users","{{firstUserId}}","events","{{eventId}}","comments","{{firstCommentId}}"] }
+      }
+    },
+    {
+      "name": "Админ редактирует комментарий",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": { "exec": ["if (!pm.collectionVariables.get('secondCommentId')) { throw new Error('id второго комментария отсутствует.'); }"] }
+        },
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test(\"Должен прийти статус 200 и тело ответа в JSON\", () => { pm.response.to.have.status(200); pm.response.to.be.withBody; pm.response.to.be.json; });"] }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Администратор изменяет текст комментария (длина более 30 символов).\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/admin/events/{{eventId}}/comments/{{secondCommentId}}", "host": ["{{baseUrl}}"], "path": ["admin","events","{{eventId}}","comments","{{secondCommentId}}"] }
+      }
+    },
+    {
+      "name": "Админ удаляет комментарий",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": { "exec": ["if (!pm.collectionVariables.get('secondCommentId')) { throw new Error('id второго комментария отсутствует.'); }"] }
+        },
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test(\"Ожидается статус 204\", () => { pm.response.to.have.status(204); });"] }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": { "raw": "{{baseUrl}}/admin/events/{{eventId}}/comments/{{secondCommentId}}", "host": ["{{baseUrl}}"], "path": ["admin","events","{{eventId}}","comments","{{secondCommentId}}"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "firstUserId", "value": "firstUser" },
+    { "key": "secondUserId", "value": "secondUser" },
+    { "key": "categoryId", "value": "category" },
+    { "key": "eventId", "value": "event" },
+    { "key": "firstCommentId", "value": "", "type": "string" },
+    { "key": "secondCommentId", "value": "secondComment" }
+  ]
+}
