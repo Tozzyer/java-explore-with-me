@@ -33,18 +33,15 @@ public class PublicCommentController {
             @RequestParam(defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
             @RequestParam(defaultValue = DEFAULT_TEN) @Positive int size) {
 
-        Long evtId = eventId;
-        log.info("GET /events/{}/comments — список комментариев к событию {}", evtId, evtId);
-        return publicCommentService.getAllCommentsByEvent(evtId, from, size);
+        log.info("GET /events/{}/comments — список комментариев к событию {}", eventId, eventId);
+        return publicCommentService.getAllCommentsByEvent(eventId, from, size);
     }
 
     @GetMapping("/{commentId}")
     public CommentResponseDto getCommentByEventAndCommentId(@PathVariable("eventId") @Positive Long eventId,
                                                             @PathVariable("commentId") @Positive Long commentId) {
 
-        Long evtId = eventId;
-        Long cmtId = commentId;
-        log.info("GET /events/{}/comments/{} — комментарий к событию {}", evtId, cmtId, evtId);
-        return publicCommentService.getCommentByEventAndCommentId(evtId, cmtId);
+        log.info("GET /events/{}/comments/{} — комментарий к событию {}", eventId, commentId, eventId);
+        return publicCommentService.getCommentByEventAndCommentId(eventId, commentId);
     }
 }

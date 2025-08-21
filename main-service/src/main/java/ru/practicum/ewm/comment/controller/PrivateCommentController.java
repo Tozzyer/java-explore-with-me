@@ -34,11 +34,9 @@ public class PrivateCommentController {
                                             @PathVariable("userId") @Positive Long userId,
                                             @PathVariable("eventId") @Positive Long eventId) {
 
-        Long uId = userId;
-        Long evtId = eventId;
         log.info("POST /users/{}/events/{}/comments — пользователь {} оставил комментарий к событию {}",
-                uId, evtId, uId, evtId);
-        return privateCommentService.createComment(newCommentDto, uId, evtId);
+                userId, eventId, userId, eventId);
+        return privateCommentService.createComment(newCommentDto, userId, eventId);
     }
 
     @PatchMapping("/{commentId}")
@@ -47,12 +45,9 @@ public class PrivateCommentController {
                                             @PathVariable("eventId") @Positive Long eventId,
                                             @PathVariable("commentId") @Positive Long commentId) {
 
-        Long uId = userId;
-        Long evtId = eventId;
-        Long cmtId = commentId;
         log.info("PATCH /users/{}/events/{}/comments/{} — пользователь {} изменил комментарий к событию {}",
-                uId, evtId, cmtId, uId, evtId);
-        return privateCommentService.updateComment(updateCommentDto, uId, evtId, cmtId);
+                userId, eventId, commentId, userId, eventId);
+        return privateCommentService.updateComment(updateCommentDto, userId, eventId, commentId);
     }
 
     @DeleteMapping("/{commentId}")
@@ -61,11 +56,8 @@ public class PrivateCommentController {
                               @PathVariable("eventId") @Positive Long eventId,
                               @PathVariable("commentId") @Positive Long commentId) {
 
-        Long uId = userId;
-        Long evtId = eventId;
-        Long cmtId = commentId;
         log.info("DELETE /users/{}/events/{}/comments/{} — пользователь {} удалил комментарий к событию {}",
-                uId, evtId, cmtId, uId, evtId);
-        privateCommentService.deleteComment(uId, evtId, cmtId);
+                userId, eventId, commentId, userId, eventId);
+        privateCommentService.deleteComment(userId, eventId, commentId);
     }
 }

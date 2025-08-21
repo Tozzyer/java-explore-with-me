@@ -93,6 +93,7 @@ public class Event {
     @Column(nullable = false)
     private String title;
 
+    @ToString.Exclude
     @OneToMany
     @JoinColumn(name = "event_id", referencedColumnName = "id")
     private Set<ParticipationRequest> participationRequests;

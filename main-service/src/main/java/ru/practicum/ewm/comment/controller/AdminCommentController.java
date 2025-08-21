@@ -31,10 +31,8 @@ public class AdminCommentController {
                                                    @PathVariable("eventId") @Positive Long eventId,
                                                    @PathVariable("commentId") @Positive Long commentId) {
 
-        Long evtId = eventId;
-        Long cmtId = commentId;
-        log.info("PATCH /admin/events/{}/comments/{} — правка комментария администратором", evtId, cmtId);
-        return adminCommentService.updateCommentByAdmin(updateCommentDto, evtId, cmtId);
+        log.info("PATCH /admin/events/{}/comments/{} — правка комментария администратором", eventId, commentId);
+        return adminCommentService.updateCommentByAdmin(updateCommentDto, eventId, commentId);
     }
 
     @DeleteMapping("/{commentId}")
@@ -42,9 +40,7 @@ public class AdminCommentController {
     public void deleteCommentByAdmin(@PathVariable("eventId") @Positive Long eventId,
                                      @PathVariable("commentId") @Positive Long commentId) {
 
-        Long evtId = eventId;
-        Long cmtId = commentId;
-        log.info("DELETE /admin/events/{}/comments/{} — удаление комментария администратором", evtId, cmtId);
-        adminCommentService.deleteCommentByAdmin(evtId, cmtId);
+        log.info("DELETE /admin/events/{}/comments/{} — удаление комментария администратором", eventId, commentId);
+        adminCommentService.deleteCommentByAdmin(eventId, commentId);
     }
 }

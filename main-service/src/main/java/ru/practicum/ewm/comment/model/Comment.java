@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -35,8 +37,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Event event;
+c    private Event event;
 
     @CreationTimestamp
     @Column(name = "created_on", nullable = false, updatable = false)
