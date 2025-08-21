@@ -10,6 +10,7 @@ import java.util.Set;
 @Table(name = "compilations")
 @Getter
 @Setter
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +35,6 @@ public class Compilation {
             inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id")
     )
     @OrderBy("eventDate")
-    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Event> events;
 }
