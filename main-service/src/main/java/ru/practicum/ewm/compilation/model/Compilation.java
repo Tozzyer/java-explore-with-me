@@ -8,7 +8,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "compilations")
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -32,7 +35,6 @@ public class Compilation {
             inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id")
     )
     @OrderBy("eventDate")
-    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Event> events;
 }
