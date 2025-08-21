@@ -37,7 +37,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     @ToString.Exclude
-c    private Event event;
+    private Event event;
 
     @CreationTimestamp
     @Column(name = "created_on", nullable = false, updatable = false)
